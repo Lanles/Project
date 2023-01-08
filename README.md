@@ -1,1 +1,1 @@
-A project made to resemble old-school rpg games with some very basic mechanics.
+A college project I made to resemble old-school RPG games using C++ with some very basic mechanics.
