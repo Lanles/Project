@@ -1,28 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Documents;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows;
-using System.Windows.Controls;
-using System.Media;
-using System.Security.Policy;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace GoblinsAndDragons
 {
-    internal class Forward
+    internal class MoveLeft
     {
-        public static void StartForward(TextBox displayText, int encounter, Random rnd, int hpMd, int hpHd, Image imageEnemy, 
+        public static void StartLeft(TextBox displayText, int encounter, Random rnd, int hpMd, int hpHd, Image imageEnemy,
                 int dice, int atvH, int apHs, int dpM, int dmHs, int atvM, int apM, int dpHs, int dmM, int gold, int upstat, TextBlock currentCoinsValue,
                 Grid lvlBox, Grid shopBox, int xp, int side, Image imageExplore, Button moveForward, Button moveLeft, Button moveRight, Button gameRestart, Button gameStart,
                 SoundPlayer player)
         {
             GameStart game = new GameStart();
 
-            displayText.AppendText("You continue forward! \n");
+            displayText.AppendText("You turn left! \n");
 
             encounter = rnd.Next(3); // Nasumicno biramo sta ce heroj da sretne (pod nulom je bitka, pod jedan je kovceg a pod tri je trgovac)
 
@@ -99,6 +96,8 @@ namespace GoblinsAndDragons
                     break;
             }
 
+
+
             // Proglasavamo ko je pobedio
             if (hpHd > 0 && upstat == 0)
             {
@@ -156,7 +155,6 @@ namespace GoblinsAndDragons
 
                 side = rnd.Next(4); // Nasumicno prikazujemo sledece opcije kuda heroj moze da ide
 
-
                 switch (side)
                 {
                     case 0:
@@ -191,7 +189,7 @@ namespace GoblinsAndDragons
             else
             {
                 player.Stop();
-                displayText.AppendText("The monster won! Better luck next time." + "\n"); // Ako je heroj izgubio gasimo sve dugmice sem restarta
+                displayText.AppendText("The monster won! Better luck next time. \n"); // Ako je heroj izgubio gasimo sve dugmice sem restarta
                 moveForward.IsEnabled = false;
                 moveLeft.IsEnabled = false;
                 moveRight.IsEnabled = false;
@@ -203,6 +201,5 @@ namespace GoblinsAndDragons
 
             displayText.ScrollToEnd();
         }
-        
     }
 }
