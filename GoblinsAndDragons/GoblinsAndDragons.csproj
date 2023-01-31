@@ -102,10 +102,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BasicMethods.cs" />
     <Compile Include="Creator.xaml.cs">
       <DependentUpon>Creator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forward.cs" />
     <Compile Include="GameStart.xaml.cs">
       <DependentUpon>GameStart.xaml</DependentUpon>
     </Compile>
@@ -115,8 +115,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MoveLeft.cs" />
-    <Compile Include="MoveRight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

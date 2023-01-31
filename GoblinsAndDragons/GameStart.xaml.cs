@@ -148,8 +148,136 @@ namespace GoblinsAndDragons
             int hpMd = hpM;
             int hpBd = hpB;
 
-            Forward.StartForward(displayText, encounter, rnd, hpMd, hpHd, imageEnemy, dice, atvH, apHs, dpM, dmHs, atvM, apM, dpHs, dmM, gold, upstat, 
-                    currentCoinsValue, lvlBox, shopBox, xp, side, imageExplore, moveForward, moveLeft, moveRight, gameRestart, gameStart, player);
+            displayText.AppendText("You continue forward! \n");
+
+            encounter = rnd.Next(3); // Nasumicno biramo sta ce heroj da sretne (pod nulom je bitka, pod jedan je kovceg a pod tri je trgovac)
+
+            switch (encounter)
+            {
+                case 0:
+                    hpHd = BasicMethods.Battle(displayText, imageEnemy, rnd, hpHd, atvH, apHs, dmHs, dpHs, hpMd, atvM, apM, dmM, dpM, dice);
+                    break;
+
+                case 1:
+                    imageEnemy.Source = null;
+                    displayText.AppendText("You have found a chest with enough XP to level up, and some coins in it! \n");
+                    gold = gold + rnd.Next(50, 151);
+                    currentCoinsValue.Text = Convert.ToString(gold);
+                    upstat = 1;
+                    displayText.AppendText("Choose what you want to level up by five points. \n");
+                    lvlBox.Visibility = Visibility.Visible;
+                    break;
+
+                case 2:
+                    imageEnemy.Source = new BitmapImage(new Uri(@"/Images/Enemy/Merchant.png", UriKind.Relative));
+                    displayText.AppendText("You seem to have encountered a merchant, and he seems to be offering you some items to buy. \n");
+                    upstat = 1;
+                    displayText.AppendText("Merchant: Hello there i have some items you might want to buy. \n");
+                    shopBox.Visibility = Visibility.Visible;
+                    break;
+            }
+
+            // Proglasavamo ko je pobedio
+            if (hpHd > 0 && upstat == 0)
+            {
+                displayText.AppendText("The hero won! \n"); // Ako je heroj pobedio dajemo mu nasumicnu valutu novcica i jedan xp poen
+                displayText.AppendText("You found some coins! \n");
+                gold = gold + rnd.Next(50, 151);
+                currentCoinsValue.Text = Convert.ToString(gold);
+                xp++;
+
+                if (xp == 2) // Ako heroj ima vise od 2 xp poena moze da unapredi neke njegove sposobnosti
+                {
+                    displayText.AppendText("You have enough XP to level up! \n");
+                    xp = 0;
+                    displayText.AppendText("Choose what you want to level up by five points. \n");
+                    lvlBox.Visibility = Visibility.Visible;
+                }
+
+                side = rnd.Next(4); // Nasumicno prikazujemo sledece opcije kuda heroj moze da ide
+
+                switch (side)
+                {
+                    case 0:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 1:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path1.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = false;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 2:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path2.png", UriKind.Relative));
+                        moveForward.IsEnabled = false;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 3:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path3.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = false;
+                        break;
+                }
+            }
+            else if (hpHd > 0 && upstat == 1)
+            {
+                displayText.AppendText("You continue forward. \n"); // Ako heroj nije naleteo na cudoviste pisemo da je samo nastavio dalje
+                upstat = 0;
+
+                side = rnd.Next(4); // Nasumicno prikazujemo sledece opcije kuda heroj moze da ide
+
+
+                switch (side)
+                {
+                    case 0:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 1:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path1.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = false;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 2:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path2.png", UriKind.Relative));
+                        moveForward.IsEnabled = false;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 3:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path3.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = false;
+                        break;
+                }
+            }
+            else
+            {
+                player.Stop();
+                displayText.AppendText("The monster won! Better luck next time." + "\n"); // Ako je heroj izgubio gasimo sve dugmice sem restarta
+                moveForward.IsEnabled = false;
+                moveLeft.IsEnabled = false;
+                moveRight.IsEnabled = false;
+                gameRestart.IsEnabled = true;
+                gameStart.IsEnabled = false;
+            }
+
+            displayText.ScrollToEnd();
         }
 
         private void moveLeft_Click(object sender, RoutedEventArgs e)
@@ -158,8 +286,136 @@ namespace GoblinsAndDragons
             int hpMd = hpM;
             int hpBd = hpB;
 
-            MoveLeft.StartLeft(displayText, encounter, rnd, hpMd, hpHd, imageEnemy, dice, atvH, apHs, dpM, dmHs, atvM, apM, dpHs, dmM, gold, upstat,
-                    currentCoinsValue, lvlBox, shopBox, xp, side, imageExplore, moveForward, moveLeft, moveRight, gameRestart, gameStart, player);
+            displayText.AppendText("You continue forward! \n");
+
+            encounter = rnd.Next(3); // Nasumicno biramo sta ce heroj da sretne (pod nulom je bitka, pod jedan je kovceg a pod tri je trgovac)
+
+            switch (encounter)
+            {
+                case 0:
+                    hpHd = BasicMethods.Battle(displayText, imageEnemy, rnd, hpHd, atvH, apHs, dmHs, dpHs, hpMd, atvM, apM, dmM, dpM, dice);
+                    break;
+
+                case 1:
+                    imageEnemy.Source = null;
+                    displayText.AppendText("You have found a chest with enough XP to level up, and some coins in it! \n");
+                    gold = gold + rnd.Next(50, 151);
+                    currentCoinsValue.Text = Convert.ToString(gold);
+                    upstat = 1;
+                    displayText.AppendText("Choose what you want to level up by five points. \n");
+                    lvlBox.Visibility = Visibility.Visible;
+                    break;
+
+                case 2:
+                    imageEnemy.Source = new BitmapImage(new Uri(@"/Images/Enemy/Merchant.png", UriKind.Relative));
+                    displayText.AppendText("You seem to have encountered a merchant, and he seems to be offering you some items to buy. \n");
+                    upstat = 1;
+                    displayText.AppendText("Merchant: Hello there i have some items you might want to buy. \n");
+                    shopBox.Visibility = Visibility.Visible;
+                    break;
+            }
+
+            // Proglasavamo ko je pobedio
+            if (hpHd > 0 && upstat == 0)
+            {
+                displayText.AppendText("The hero won! \n"); // Ako je heroj pobedio dajemo mu nasumicnu valutu novcica i jedan xp poen
+                displayText.AppendText("You found some coins! \n");
+                gold = gold + rnd.Next(50, 151);
+                currentCoinsValue.Text = Convert.ToString(gold);
+                xp++;
+
+                if (xp == 2) // Ako heroj ima vise od 2 xp poena moze da unapredi neke njegove sposobnosti
+                {
+                    displayText.AppendText("You have enough XP to level up! \n");
+                    xp = 0;
+                    displayText.AppendText("Choose what you want to level up by five points. \n");
+                    lvlBox.Visibility = Visibility.Visible;
+                }
+
+                side = rnd.Next(4); // Nasumicno prikazujemo sledece opcije kuda heroj moze da ide
+
+                switch (side)
+                {
+                    case 0:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 1:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path1.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = false;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 2:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path2.png", UriKind.Relative));
+                        moveForward.IsEnabled = false;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 3:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path3.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = false;
+                        break;
+                }
+            }
+            else if (hpHd > 0 && upstat == 1)
+            {
+                displayText.AppendText("You continue forward. \n"); // Ako heroj nije naleteo na cudoviste pisemo da je samo nastavio dalje
+                upstat = 0;
+
+                side = rnd.Next(4); // Nasumicno prikazujemo sledece opcije kuda heroj moze da ide
+
+
+                switch (side)
+                {
+                    case 0:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 1:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path1.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = false;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 2:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path2.png", UriKind.Relative));
+                        moveForward.IsEnabled = false;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 3:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path3.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = false;
+                        break;
+                }
+            }
+            else
+            {
+                player.Stop();
+                displayText.AppendText("The monster won! Better luck next time." + "\n"); // Ako je heroj izgubio gasimo sve dugmice sem restarta
+                moveForward.IsEnabled = false;
+                moveLeft.IsEnabled = false;
+                moveRight.IsEnabled = false;
+                gameRestart.IsEnabled = true;
+                gameStart.IsEnabled = false;
+            }
+
+            displayText.ScrollToEnd();
         }
 
         private void moveRight_Click(object sender, RoutedEventArgs e)
@@ -170,8 +426,170 @@ namespace GoblinsAndDragons
 
             boss++; // Dodajemo sansu da se pojavi boss
 
-            MoveRight.StartRight(displayText, encounter, rnd, hpMd, hpHd, imageEnemy, dice, atvH, apHs, dpM, dmHs, atvM, apM, dpHs, dmM, gold, upstat,
-                    currentCoinsValue, lvlBox, shopBox, xp, side, imageExplore, moveForward, moveLeft, moveRight, gameRestart, gameStart, player, boss, hpBd, dpB, atvB, apB, dmB);
+            displayText.AppendText("You continue forward! \n");
+
+            if (boss == 6)
+            {
+                displayText.AppendText("You have found the boss of this dungeon! \n");
+
+                hpHd = BasicMethods.BossBattle(displayText, imageEnemy, rnd, hpHd, atvH, apHs, dmHs, dpHs, hpBd, atvB, apB, dmB, dpB, dice);
+            }
+            else
+            {
+                encounter = rnd.Next(3); // Nasumicno biramo sta ce heroj da sretne (pod nulom je bitka, pod jedan je kovceg a pod tri je trgovac)
+
+                switch (encounter)
+                {
+                    case 0:
+                        hpHd = BasicMethods.Battle(displayText, imageEnemy, rnd, hpHd, atvH, apHs, dmHs, dpHs, hpMd, atvM, apM, dmM, dpM, dice);
+                        break;
+
+                    case 1:
+                        imageEnemy.Source = null;
+                        displayText.AppendText("You have found a chest with enough XP to level up, and some coins in it! \n");
+                        gold = gold + rnd.Next(50, 151);
+                        currentCoinsValue.Text = Convert.ToString(gold);
+                        upstat = 1;
+                        displayText.AppendText("Choose what you want to level up by five points. \n");
+                        lvlBox.Visibility = Visibility.Visible;
+                        break;
+
+                    case 2:
+                        imageEnemy.Source = new BitmapImage(new Uri(@"/Images/Enemy/Merchant.png", UriKind.Relative));
+                        displayText.AppendText("You seem to have encountered a merchant, and he seems to be offering you some items to buy. \n");
+                        upstat = 1;
+                        displayText.AppendText("Merchant: Hello there i have some items you might want to buy. \n");
+                        shopBox.Visibility = Visibility.Visible;
+                        break;
+                }
+            }
+
+            // Proglasavamo ko je pobedio
+            if (boss == 6)
+            {
+                if (hpHd > 0)
+                {
+                    player.Stop();
+                    displayText.AppendText("The hero won and defeated the boss! You can now look at your playthrough. \n");
+
+                    moveForward.IsEnabled = false; // Gasimo dugmice za skretanje
+                    moveLeft.IsEnabled = false;
+                    moveRight.IsEnabled = false;
+                    gameRestart.IsEnabled = true;
+                    gameStart.IsEnabled = false;
+                }
+                else
+                {
+                    player.Stop();
+                    displayText.AppendText("The boss has defeated the hero! Better luck next time. \n");
+
+                    moveForward.IsEnabled = false; // Gasimo dugmice za skretanje
+                    moveLeft.IsEnabled = false;
+                    moveRight.IsEnabled = false;
+                    gameRestart.IsEnabled = true;
+                    gameStart.IsEnabled = false;
+                }
+            }
+            else if (hpHd > 0 && upstat == 0)
+            {
+                displayText.AppendText("The hero won! \n"); // Ako je heroj pobedio dajemo mu nasumicnu valutu novcica i jedan xp poen
+                displayText.AppendText("You found some coins! \n");
+                gold = gold + rnd.Next(50, 151);
+                currentCoinsValue.Text = Convert.ToString(gold);
+                xp++;
+
+                if (xp == 2) // Ako heroj ima vise od 2 xp poena moze da unapredi neke njegove sposobnosti
+                {
+                    displayText.AppendText("You have enough XP to level up! \n");
+                    xp = 0;
+                    displayText.AppendText("Choose what you want to level up by five points. \n");
+                    lvlBox.Visibility = Visibility.Visible;
+                }
+
+                side = rnd.Next(4); // Nasumicno prikazujemo sledece opcije kuda heroj moze da ide
+
+                switch (side)
+                {
+                    case 0:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 1:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path1.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = false;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 2:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path2.png", UriKind.Relative));
+                        moveForward.IsEnabled = false;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 3:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path3.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = false;
+                        break;
+                }
+            }
+            else if (hpHd > 0 && upstat == 1)
+            {
+                displayText.AppendText("You continue forward. \n"); // Ako heroj nije naleteo na cudoviste pisemo da je samo nastavio dalje
+                upstat = 0;
+
+                side = rnd.Next(4); // Nasumicno prikazujemo sledece opcije kuda heroj moze da ide
+
+
+                switch (side)
+                {
+                    case 0:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 1:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path1.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = false;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 2:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path2.png", UriKind.Relative));
+                        moveForward.IsEnabled = false;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = true;
+                        break;
+
+                    case 3:
+                        imageExplore.Source = new BitmapImage(new Uri(@"/Images/Path/Path3.png", UriKind.Relative));
+                        moveForward.IsEnabled = true;
+                        moveLeft.IsEnabled = true;
+                        moveRight.IsEnabled = false;
+                        break;
+                }
+            }
+            else
+            {
+                player.Stop();
+                displayText.AppendText("The monster won! Better luck next time." + "\n"); // Ako je heroj izgubio gasimo sve dugmice sem restarta
+                moveForward.IsEnabled = false;
+                moveLeft.IsEnabled = false;
+                moveRight.IsEnabled = false;
+                gameRestart.IsEnabled = true;
+                gameStart.IsEnabled = false;
+            }
+
+            displayText.ScrollToEnd();
         }
 
         private void lvlHpButton_Click(object sender, RoutedEventArgs e)
